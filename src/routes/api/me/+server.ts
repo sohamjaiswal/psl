@@ -2,6 +2,7 @@ import Database from 'better-sqlite3'
 import { sendRes } from '../../../helpers/server.helper.js'
 import type { IUser } from '../../../types/user.types'
 import type { ISession } from '../../../types/session.types'
+import { redirect } from '@sveltejs/kit'
 
 const users = new Database('./src/database/users.sqlite')
 const sessions = new Database('./src/database/sessions.sqlite')
@@ -63,8 +64,23 @@ export const PATCH = async({cookies, request}) => {
     if (profilePicture) {
       users.prepare(`update users set profilePicture = ? where username = ?`).run([profilePicture, userData.username])
     }
-    return sendRes({message: 'Updated'}, 200)
+    let newUserData: Omit<IUser, 'profilePicture'> = {username: '', password: ''}
+    if (userSession.username) {
+      const query = users.prepare(`select * from users where username = ?`).get([userSession.username]) as IUser | undefined
+      if (query) {
+        newUserData = query
+      }
+    }
+    if (newUserData.username) {
+      const sendData: Partial<IUser> = newUserData
+      delete sendData.password
+      return sendRes(sendData, 200)
+    } 
+    cookies.delete('session')
+    return sendRes({message: 'No user'}, 401)
   }
+  cookies.delete('session')
+  return sendRes({message: 'No user'}, 401)
 }
 
 export const DELETE = async({cookies}) => {

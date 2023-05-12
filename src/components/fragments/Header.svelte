@@ -6,19 +6,8 @@
 	import Button from "../ui/Button.svelte";
 	import Avatar from "../ui/Avatar.svelte";
 	import { isUpdateAvailable } from "../../stores/helper.store";
-
   export let displayName: string
   let isActionsModalVisible = false
-
-  $: update = false;
-
-  $: avatar = ''
-
-  profilePicture.subscribe((value) => {
-    update = true
-    avatar = value
-    update = false
-  })
 
   const handleAvatarClick = () => {
     isActionsModalVisible = !isActionsModalVisible
@@ -41,7 +30,6 @@ const handleLogoutClick = () => {
     goto('/')
   }
 </script>
-
 <header>
   <nav>
     <div class="links">
@@ -50,9 +38,7 @@ const handleLogoutClick = () => {
     <div class="buttons" on:mouseenter={() => isActionsModalVisible = true} on:mouseleave={() => isActionsModalVisible = false}>
       {#if $isLoggedIn}
       <button on:click={handleAvatarClick}>
-        {#key update}
-          <Avatar userFullName={displayName} width={32} round src={avatar} />
-        {/key}
+          <Avatar userFullName={displayName} width={48} round src={$profilePicture} />
       </button>
       <div class="actions" class:visible={isActionsModalVisible}>
         <h4>
@@ -94,6 +80,8 @@ const handleLogoutClick = () => {
   }
 
   .buttons {
+    display: flex;
+    gap: 8px;
     button {
       border: none;
       background: none;
@@ -101,6 +89,7 @@ const handleLogoutClick = () => {
       outline: none;
     }
     .actions {
+      margin-top: 50px;
       h4 {
         margin: 8px 0px;
       }
@@ -109,6 +98,7 @@ const handleLogoutClick = () => {
       outline: var(--border) solid 2px;
       padding: 8px;
       border-radius: 8px;
+      background: var(--background);
       display: none;
       &.visible {
         display: flex;
@@ -116,6 +106,6 @@ const handleLogoutClick = () => {
         gap: 4px;
       }
     }
-  }
+}
   
 </style>

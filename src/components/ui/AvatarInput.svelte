@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { profilePicture } from "../../stores/me.store";
+
 	export let  avatar: string
   let fileinput: any;
 	
@@ -7,8 +9,7 @@
     let reader = new FileReader();
     reader.readAsDataURL(image);
     reader.onload = (e: any) => {
-      console.log(e.target.result)
-      avatar = e.target.result
+      avatar = e.target.result;
     };
   }
 	

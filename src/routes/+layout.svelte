@@ -5,10 +5,7 @@
 	import { showErrorToast, showSuccessToast } from "../helpers/toasts.helper";
   import { isLoggedIn, profilePicture, username } from "../stores/me.store";
   import type { IExposedUser } from "../types/user.types";
-
   $: displayName = ''
-  $: avatar = ''
-
   onMount(async() => {
   const response = await fetch('/api/me', {
     method: 'GET',
@@ -44,7 +41,9 @@
 </script>
 <main>
   <div class="main">
+    {#key $profilePicture}
     <Header displayName={displayName} />
+    {/key}
     <SvelteToast />
     <slot displayName={displayName}/>
   </div>

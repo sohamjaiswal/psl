@@ -59,6 +59,7 @@
       showErrorToast('Could not get updated user', {duration: 3000})
     } else {
       const res = await me.json()
+      console.log(res)
       storeUsername.set(res.username)
       storeProfilePicture.set(res.profilePicture)
     }

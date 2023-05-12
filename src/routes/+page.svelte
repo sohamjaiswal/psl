@@ -26,7 +26,6 @@
         username.set('')
         return
       }
-      showSuccessToast('Session Load successful!', {duration: 3000})
       isLoggedIn.set(true)
       const data = (await response.json() as IExposedUser)
       const name = data.username
@@ -50,4 +49,3 @@
 {/if}
 
 <Button label="Create Class" onclick={handleCreateClassClick} />
-<!-- <p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p> -->

@@ -1,4 +1,4 @@
-import { showErrorToast, showSuccessToast } from "../../helpers/toasts.helper";
+import { showErrorToast } from "../../helpers/toasts.helper";
 import { isLoggedIn, username } from "../../stores/me.store";
 import type { IExposedUser } from "../../types/user.types";
 
@@ -27,7 +27,6 @@ export const load: ({fetch}: {fetch: any}) => Promise<false | IExposedUser> = as
       username.set('')
       return false
     }
-    showSuccessToast('Session Load successful!', {duration: 3000})
     isLoggedIn.set(true)
     const userDetails = await response.json() as IExposedUser
     username.set(userDetails.username)
