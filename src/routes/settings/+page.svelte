@@ -77,6 +77,7 @@
       console.log(e)
       return
     });
+    goto('/')
     isUpdateAvailable.set(true)
     return
   }

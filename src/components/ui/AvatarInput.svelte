@@ -55,6 +55,12 @@
       position: absolute;
       top: 150px;
       left: 150px;
+      &:hover {
+        transform: scale(102%);
+      }
+      &:active {
+        transform: scale(98%);
+      }
     }
   }
 </style>

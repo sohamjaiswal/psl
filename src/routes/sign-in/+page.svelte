@@ -4,8 +4,9 @@
   import Form from "../../components/ui/Form.svelte";
   import TextInput from "../../components/ui/TextInput.svelte";
 	import { showErrorToast, showSuccessToast } from "../../helpers/toasts.helper";
-	import { isLoggedIn, profilePicture, username as storeUsername } from "../../stores/me.store";
+	import { isLoggedIn, profilePicture, username as storeUsername, displayName } from "../../stores/me.store";
 	import type { IExposedUser } from "../../types/user.types";
+
   let username = ''
   let password = ''
   const handleSubmit = async(e: Event) => {
@@ -38,11 +39,34 @@
       }
       showSuccessToast('Sign in successful!', {duration: 3000})
       isLoggedIn.set(true)
-      const data = (await response.json()) as IExposedUser
-      const name = data.username
-      storeUsername.set(name)
-      profilePicture.set(data.profilePicture)
-      window.location.assign(window.location.hostname)
+      const me = await fetch('/api/me', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }).catch((e) => {
+          showErrorToast('Error connecting to server!', {duration: 3000})
+          console.log(e)
+          return
+        }
+      );
+      if (me) {
+        const loggedIn = $isLoggedIn
+        if (response.status === 401 && !loggedIn) {
+          isLoggedIn.set(false)
+          storeUsername.set('')
+          return
+        }
+        isLoggedIn.set(true)
+        const data = (await me.json() as IExposedUser)
+        storeUsername.set(data.username)
+        profilePicture.set(data.profilePicture)
+        console.log('ran')
+        displayName.set(`${data.firstName} ${data.lastName}` != ' ' ? `${data.firstName} ${data.lastName}` : data.username)
+        window.location.assign('/')
+      } else {
+        showErrorToast('Could not get updated user', {duration: 3000})
+      }
     }
   }
 </script>
