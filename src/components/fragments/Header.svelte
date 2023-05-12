@@ -1,11 +1,28 @@
 <script lang='ts'>
 	import { goto } from "$app/navigation";
+	import { onMount } from "svelte";
 	import { showErrorToast, showSuccessToast } from "../../helpers/toasts.helper";
-	import { isLoggedIn, username } from "../../stores/me.store";
+	import { isLoggedIn, profilePicture, username } from "../../stores/me.store";
 	import Button from "../ui/Button.svelte";
+	import Avatar from "../ui/Avatar.svelte";
+	import { isUpdateAvailable } from "../../stores/helper.store";
 
+  export let displayName: string
+  let isActionsModalVisible = false
 
+  $: update = false;
 
+  $: avatar = ''
+
+  profilePicture.subscribe((value) => {
+    update = true
+    avatar = value
+    update = false
+  })
+
+  const handleAvatarClick = () => {
+    isActionsModalVisible = !isActionsModalVisible
+  }
 const handleLogoutClick = () => {
     fetch('/api/logout', {
       method: 'GET',
@@ -18,10 +35,11 @@ const handleLogoutClick = () => {
       return
     })
     username.set('')
+    profilePicture.set('')
     isLoggedIn.set(false)
     showSuccessToast('Logout successful!', {duration: 3000})
+    goto('/')
   }
-
 </script>
 
 <header>
@@ -29,9 +47,20 @@ const handleLogoutClick = () => {
     <div class="links">
       <a href="/">Home</a>
     </div>
-    <div class="buttons">
+    <div class="buttons" on:mouseenter={() => isActionsModalVisible = true} on:mouseleave={() => isActionsModalVisible = false}>
       {#if $isLoggedIn}
-      <Button label="Logout" onclick={handleLogoutClick} color="tertiary" />
+      <button on:click={handleAvatarClick}>
+        {#key update}
+          <Avatar userFullName={displayName} width={32} round src={avatar} />
+        {/key}
+      </button>
+      <div class="actions" class:visible={isActionsModalVisible}>
+        <h4>
+          Hi, {displayName}
+        </h4>
+        <Button label="Settings" onclick={() => goto('/settings')} color="primary" />
+        <Button label="Logout" onclick={handleLogoutClick} color="tertiary" />
+      </div>
       {:else}
       <Button label="Login" onclick={() => goto('/sign-in')} color="primary" />
       <Button label="Register" onclick={() => goto('register')} color="primary" />
@@ -40,15 +69,13 @@ const handleLogoutClick = () => {
   </nav>
 </header>
 
-<style>
+<style lang="scss">
   header nav {
-    width: calc(100% - 64px);
+    width: 100%;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    padding: 0px 32px;
-    /* text-align: center; */
   }
 
   nav a {
@@ -65,4 +92,30 @@ const handleLogoutClick = () => {
   nav a:active {
     border-color: var(--text);
   }
+
+  .buttons {
+    button {
+      border: none;
+      background: none;
+      cursor: pointer;
+      outline: none;
+    }
+    .actions {
+      h4 {
+        margin: 8px 0px;
+      }
+      position: absolute;
+      width: 150px;
+      outline: var(--border) solid 2px;
+      padding: 8px;
+      border-radius: 8px;
+      display: none;
+      &.visible {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+    }
+  }
+  
 </style>

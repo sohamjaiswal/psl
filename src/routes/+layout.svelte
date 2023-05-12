@@ -1,12 +1,52 @@
-<script>
+<script lang="ts">
+	import { onMount } from "svelte";
 	import Header from "../components/fragments/Header.svelte";
   import { SvelteToast } from '@zerodevx/svelte-toast'
+	import { showErrorToast, showSuccessToast } from "../helpers/toasts.helper";
+  import { isLoggedIn, profilePicture, username } from "../stores/me.store";
+  import type { IExposedUser } from "../types/user.types";
+
+  $: displayName = ''
+  $: avatar = ''
+
+  onMount(async() => {
+  const response = await fetch('/api/me', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }).catch((e) => {
+      showErrorToast('Error connecting to server!', {duration: 3000})
+      console.log(e)
+      return
+    }
+  );
+    if (response) {
+      const loggedIn = $isLoggedIn
+      if (response.status === 401 && !loggedIn) {
+        isLoggedIn.set(false)
+        username.set('')
+        return
+      }
+      showSuccessToast('Session Load successful!', {duration: 3000})
+      isLoggedIn.set(true)
+      const data = (await response.json() as IExposedUser)
+      const name = data.username
+      username.set(name)
+      if (data.profilePicture) {
+        username.set(data.username)
+        displayName = `${data.firstName} ${data.lastName}` != ' ' ? `${data.firstName} ${data.lastName}` : name
+        profilePicture.set(data.profilePicture)
+      }
+    }
+  }
+)
 </script>
 <main>
   <div class="main">
-    <Header />
+    <Header displayName={displayName} />
     <SvelteToast />
-    <slot />
+    <slot displayName={displayName}/>
   </div>
 </main>
 

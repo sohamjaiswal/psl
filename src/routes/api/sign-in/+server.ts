@@ -30,7 +30,7 @@ const newUserSession = (username: string) => {
   return session
 }
 
-export const POST = async({request, cookies}) => {
+export const POST = async({request, cookies}: {request: any, cookies: any}) => {
   const {username, password} = await request.json()
   console.log(username, password)
   if (!username || !password) {

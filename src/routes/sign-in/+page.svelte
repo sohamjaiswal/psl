@@ -4,7 +4,7 @@
   import Form from "../../components/ui/Form.svelte";
   import TextInput from "../../components/ui/TextInput.svelte";
 	import { showErrorToast, showSuccessToast } from "../../helpers/toasts.helper";
-	import { isLoggedIn, username as storeUsername } from "../../stores/me.store";
+	import { isLoggedIn, profilePicture, username as storeUsername } from "../../stores/me.store";
 	import type { IExposedUser } from "../../types/user.types";
   let username = ''
   let password = ''
@@ -38,8 +38,11 @@
       }
       showSuccessToast('Sign in successful!', {duration: 3000})
       isLoggedIn.set(true)
-      const name = (await response.json() as IExposedUser).username
+      const data = (await response.json()) as IExposedUser
+      const name = data.username
       storeUsername.set(name)
+      profilePicture.set(data.profilePicture)
+      window.location.assign(window.location.hostname)
     }
   }
 </script>

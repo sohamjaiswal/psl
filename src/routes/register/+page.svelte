@@ -33,6 +33,10 @@
       return
     });
     if (response) {
+      if (response.status == 401) {
+        showErrorToast((await response.json()).message, {duration: 3000})
+        return
+      }
       console.log(response)
       showSuccessToast('Registration successful!', {duration: 3000})
     }
