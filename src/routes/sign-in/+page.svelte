@@ -62,7 +62,7 @@
         storeUsername.set(data.username)
         profilePicture.set(data.profilePicture)
         console.log('ran')
-        displayName.set(`${data.firstName} ${data.lastName}` != ' ' ? `${data.firstName} ${data.lastName}` : data.username)
+        displayName.set(`${data.firstName} ${data.lastName}` != 'null null' ? `${data.firstName} ${data.lastName}` : data.username)
         window.location.assign('/')
       } else {
         showErrorToast('Could not get updated user', {duration: 3000})

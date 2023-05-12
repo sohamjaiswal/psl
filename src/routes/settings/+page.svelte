@@ -3,11 +3,11 @@
 	import Form from "../../components/ui/Form.svelte";
 	import TextInput from "../../components/ui/TextInput.svelte";
 	import AvatarInput from "../../components/ui/AvatarInput.svelte";
-	import { showErrorToast } from "../../helpers/toasts.helper";
+	import { showErrorToast, showSuccessToast } from "../../helpers/toasts.helper";
 	import { goto } from "$app/navigation";
 	import type { IExposedUser } from "../../types/user.types";
 	import { isUpdateAvailable } from "../../stores/helper.store";
-  import { username as storeUsername, profilePicture as storeProfilePicture } from "../../stores/me.store";
+  import { username as storeUsername, profilePicture as storeProfilePicture, displayName } from "../../stores/me.store";
 
   export let data: false | IExposedUser
 
@@ -58,9 +58,11 @@
     if (!me) {
       showErrorToast('Could not get updated user', {duration: 3000})
     } else {
+      showSuccessToast('Updated user!', {duration: 3000})
       const res = await me.json()
       console.log(res)
       storeUsername.set(res.username)
+      displayName.set(`${res.firstName} ${res.lastName}` != 'null null' ? `${res.firstName} ${res.lastName}` : res.username)
       storeProfilePicture.set(res.profilePicture)
     }
     return
@@ -77,7 +79,10 @@
       console.log(e)
       return
     });
-    goto('/')
+    storeUsername.set('')
+    displayName.set('')
+    storeProfilePicture.set('')
+    window.location.assign('/')
     isUpdateAvailable.set(true)
     return
   }

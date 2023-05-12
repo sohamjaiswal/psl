@@ -3,9 +3,8 @@
 	import Header from "../components/fragments/Header.svelte";
   import { SvelteToast } from '@zerodevx/svelte-toast'
 	import { showErrorToast, showSuccessToast } from "../helpers/toasts.helper";
-  import { isLoggedIn, profilePicture, username } from "../stores/me.store";
+  import { displayName, isLoggedIn, profilePicture, username } from "../stores/me.store";
   import type { IExposedUser } from "../types/user.types";
-  $: displayName = ''
   onMount(async() => {
   const response = await fetch('/api/me', {
     method: 'GET',
@@ -32,7 +31,7 @@
       username.set(name)
       if (data.profilePicture) {
         username.set(data.username)
-        displayName = `${data.firstName} ${data.lastName}` != ' ' ? `${data.firstName} ${data.lastName}` : name
+        displayName.set(`${data.firstName} ${data.lastName}` != 'null null' ? `${data.firstName} ${data.lastName}` : name) 
         profilePicture.set(data.profilePicture)
       }
     }
@@ -42,10 +41,10 @@
 <main>
   <div class="main">
     {#key $profilePicture}
-    <Header displayName={displayName} />
+    <Header />
     {/key}
     <SvelteToast />
-    <slot displayName={displayName}/>
+    <slot />
   </div>
 </main>
 

@@ -2,11 +2,10 @@
 	import { goto } from "$app/navigation";
 	import { onMount } from "svelte";
 	import { showErrorToast, showSuccessToast } from "../../helpers/toasts.helper";
-	import { isLoggedIn, profilePicture, username } from "../../stores/me.store";
+	import { displayName, isLoggedIn, profilePicture, username } from "../../stores/me.store";
 	import Button from "../ui/Button.svelte";
 	import Avatar from "../ui/Avatar.svelte";
 	import { isUpdateAvailable } from "../../stores/helper.store";
-  export let displayName: string
   let isActionsModalVisible = false
 
   const handleAvatarClick = () => {
@@ -38,11 +37,11 @@ const handleLogoutClick = () => {
     <div class="buttons" on:mouseenter={() => isActionsModalVisible = true} on:mouseleave={() => isActionsModalVisible = false}>
       {#if $isLoggedIn}
       <button on:click={handleAvatarClick}>
-          <Avatar userFullName={displayName} width={48} round src={$profilePicture} />
+          <Avatar userFullName={$displayName} width={48} round src={$profilePicture} />
       </button>
       <div class="actions" class:visible={isActionsModalVisible}>
         <h4>
-          Hi, {displayName}
+          Hi, {$displayName}
         </h4>
         <Button label="Settings" onclick={() => goto('/settings')} color="primary" />
         <Button label="Logout" onclick={handleLogoutClick} color="tertiary" />
@@ -90,6 +89,7 @@ const handleLogoutClick = () => {
     }
     .actions {
       margin-top: 50px;
+      transform: translateX(-50%);
       h4 {
         margin: 8px 0px;
       }
